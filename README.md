@@ -21,7 +21,7 @@ $F'(X)$ is a sparse [N,N,N,N] tensor. But we have a nice expression for the jaco
 
 $$ F'(X_k)H = XH+HX. $$
 
-This is all we need if we choose to use a matrix-free method like Conjugate Gradient to get the step in Newton's method.
+This is all we need if we choose to use a matrix-free method like Conjugate Gradient to get the step in Newton's method. This inner iteration can be truncated after only a few iterations.
 
 
 See [N.Higham - Newton's Method for the Matrix Square Root](https://www.ams.org/journals/mcom/1986-46-174/S0025-5718-1986-0829624-5/S0025-5718-1986-0829624-5.pdf)
