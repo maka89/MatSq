@@ -23,7 +23,7 @@ def get_jacobian(X):
 
 def cg_step(X,B):
 
-    alpha = np.sum(B**2)/(B.ravel()@jac_vec_prod(X,B).ravel())
+    alpha = np.sum(B**2)/np.sum(B*jac_vec_prod(X,B))
     return alpha*B
 
 

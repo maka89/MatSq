@@ -53,8 +53,8 @@ if __name__=="__main__":
     def test1():
         import time
         np.random.seed(0)
-        M=1000
-        N=100
+        M=49
+        N=49
         
         C=0.0
         for i in range(0,10):
@@ -83,7 +83,7 @@ if __name__=="__main__":
         
         #xinit=1e9*np.eye(N)#.ravel()
         t0 = time.time()
-        sq1 = sqiter(C2,Xinit=xinit,max_iter=2)
+        sq1 = sqiter(C2,Xinit=xinit,max_iter=5)
         t1 = time.time()-t0
         print("NEWTON: ",np.linalg.norm(sq1-sq2), t1)
     
