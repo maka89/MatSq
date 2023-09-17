@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.sparse.linalg import LinearOperator
     
-
+def fn(X,Y):
+    return X@X-Y
+    
 def trans_jac_vec_prod(X,v):
     return X.T@v + v@X.T
     
