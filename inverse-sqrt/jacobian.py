@@ -4,11 +4,11 @@ from scipy.sparse.linalg import LinearOperator
 def fn(X,Y):
     return X@Y@X-np.eye(X.shape[0])
     
-def trans_jac_vec_prod(X,v):
-    return X.T@v + v@X.T
+def trans_jac_vec_prod(X,Y,v):
+    return Y.T@X.T@v + v@X.T@Y.T
     
-def jac_vec_prod(X,v):
-    return X@v+v@X
+def jac_vec_prod(X,Y,v):
+    return X@Y@v+v@Y@X
 
 
 def get_jacobian(X):
