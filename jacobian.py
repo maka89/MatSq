@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import LinearOperator
     
 def fn(X,Y):
-    return X@Y@X-np.eye(X.shape[0])
+    return X@X-Y
     
 def trans_jac_vec_prod(X,v):
     return X.T@v + v@X.T
@@ -25,7 +25,7 @@ def cg_step(X,B):
 
     alpha = np.sum(B**2)/np.sum(B*jac_vec_prod(X,B))
     return alpha*B
-
+    
 
 if __name__=="__main__":
     
