@@ -1,7 +1,7 @@
 from torch_cg import sqrt_mat_cg
 from torch_jacobian import fn
 import torch
-def mat_sqrt_newton(Y,Xinit,maxiter=100,miniter=2,tol=1e-4,tol_cg2=0.12,cg_iter=2,cg_atol=1e-16):
+def mat_sqrt_newton(Y,Xinit,maxiter=100,miniter=2,tol=1e-4,tol_cg2=0.2,cg_iter=2,cg_atol=1e-16):
     N=Y.size()[-1]
     if Xinit is not None:
         assert(Xinit.size()==Y.size())
@@ -9,33 +9,36 @@ def mat_sqrt_newton(Y,Xinit,maxiter=100,miniter=2,tol=1e-4,tol_cg2=0.12,cg_iter=
         Xinit = torch.eye(N)
     X=Xinit
     
-    Ymean = torch.mean(Y,dim=(-2,-1),keepdim=True)
-    Yscale = torch.mean((Y-Ymean)**2,dim=(-2,-1),keepdim=True)
+    #Ymean = torch.mean(Y,dim=(-2,-1),keepdim=True)
+    Yscale = torch.sqrt(torch.sum(Y**2,dim=(-2,-1),keepdim=True))
+    Yscale_sqrt = torch.sqrt(Yscale)
+    X=X/Yscale_sqrt
+    Y=Y/Yscale
     for i in range(0,miniter):
-        dX = sqrt_mat_cg(X/Yscale,fn(X,Y)/Yscale,maxiter=1,atol=cg_atol)
+        dX = sqrt_mat_cg(X,fn(X,Y),maxiter=1,atol=cg_atol)
         X=X+dX
         
     cgit=1
     for i in range(miniter,maxiter):
-        resid = fn(X,Y)/Yscale
+        resid = fn(X,Y)
         
-        err = torch.max(torch.mean(resid**2,dim=(-2,-1)))
-        print(i,err ,cgit)
+        err = torch.max(torch.sum(resid**2,dim=(-2,-1)))
+        print(i,torch.sqrt(err) ,cgit)
         if  err <= tol**2:
             break
         elif err <= tol_cg2**2: # If below this limit, increase number of cg_steps.
             cgit=cg_iter
-            
-        dX = sqrt_mat_cg(X/Yscale,resid,maxiter=cgit,atol=cg_atol)
+        
+        dX = sqrt_mat_cg(X,resid,maxiter=cgit,atol=cg_atol)
         X=X+dX
         
-    return X
+    return X*Yscale_sqrt
     
     
 if __name__ == "__main__":
     
     import time
-    #torch.set_default_dtype(torch.float64)
+    torch.set_default_dtype(torch.float64)
     torch.manual_seed(0)
     M=200
     N=50
@@ -56,12 +59,8 @@ if __name__ == "__main__":
     w=w.reshape(30,13,N,1)
     C2sqrt = torch.matmul(q,w**0.5*torch.transpose(q,3,2))
     
-    C2mean = torch.mean(C2sqrt,dim=(-2,-1),keepdim=True)
-    C2scale = torch.mean((C2sqrt-C2mean)**2,dim=(-2,-1),keepdim=True)
-    print(torch.max(torch.sqrt(torch.mean((X-C2sqrt)**2,dim=(-2,-1),keepdim=True)/C2scale)))
     
-    C2mean = torch.mean(C2,dim=(-2,-1),keepdim=True)
-    C2scale = torch.mean((C2-C2mean)**2,dim=(-2,-1),keepdim=True)
-    print(torch.max(torch.sqrt(torch.mean((torch.matmul(X,X)-C2)**2,dim=(-2,-1),keepdim=True)/C2scale)))
+    C2scale = torch.sqrt(torch.sum(C2**2,dim=(-2,-1),keepdim=True))
+    print(torch.max(torch.sqrt(torch.sum(((torch.matmul(X,X)-C2)/C2scale)**2,dim=(-2,-1),keepdim=True))))
     
     

@@ -12,7 +12,7 @@ def calc_beta(done,rplus,r):
 def calc_done(r,tol):
     return torch.sum(r**2,dim=(-2,-1),keepdims=True)<=tol
     
-def matcg(jac_vec_prod,B,maxiter=10,atol=1e-16):
+def matcg(jac_vec_prod,B,maxiter=10,atol=1e-20):
       
     atol_sq = atol**2
     x=torch.zeros_like(B)
@@ -50,7 +50,7 @@ if __name__=="__main__":
     from jacobian import get_jacobian
     from scipy.sparse.linalg import cg
     import numpy as np
-    torch.set_default_dtype(torch.float64)
+    #torch.set_default_dtype(torch.float64)
     torch.manual_seed(0)
     N=20
     Y=torch.randn(N,N)
