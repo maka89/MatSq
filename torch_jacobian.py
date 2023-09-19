@@ -31,8 +31,8 @@ if __name__=="__main__":
     X2 = torch.clone(X)
     for i in range(0,steps):
         X2 = cg_step(X2,Y)
-    print(X2)
-    print(time.time()-t0)
+    #print(X2)
+    print("Time elapsed: ",time.time()-t0)
     answ_torch=X2[3,4].cpu().detach().numpy()
     
     
